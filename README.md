@@ -10,7 +10,7 @@ This project provides a web application to summarize YouTube videos into text us
 
 ## Requirements
 
-- Python 3.6 or higher
+- [Python 3.6+](https://www.python.org/downloads/)
 - `fastapi`
 - `ffmpeg` (for audio conversion)
 - `openai`
@@ -18,6 +18,7 @@ This project provides a web application to summarize YouTube videos into text us
 - `pydantic`
 - `uvicorn`
 - `yt-dlp`
+- `boto3`
 
 ## Installation
 

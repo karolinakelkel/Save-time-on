@@ -10,19 +10,23 @@ def generate_unique_file_name() -> str:
     return f'{timestamp}_{unique_id}'
 
 
+def create_path(path: str, file_name: str) -> str:
+    return os.path.join(path, file_name)
+
+
 def extract_audio_from_youtube_video(url: str, output_path: str) -> str:
     try:
         unique_file_name = generate_unique_file_name()
-        temp_file_path = os.path.join(output_path, f'{unique_file_name}.webm')
-        final_wav_file_path = os.path.join(output_path, f'{unique_file_name}.wav')
+        temp_file_path = create_path(output_path, f'{unique_file_name}.webm')
+        final_wav_file_path = create_path(output_path, f'{unique_file_name}.wav')
 
-        ydl_options = {'format': 'bestaudio',
-                       'outtmpl': temp_file_path,
-                       'postprocessors': [{'key': 'FFmpegExtractAudio',
-                                           'preferredcodec': 'wav',
-                                           'preferredquality': '192'}]}
+        youtubedl_options = {'format': 'bestaudio',
+                             'outtmpl': temp_file_path,
+                             'postprocessors': [{'key': 'FFmpegExtractAudio',
+                                                 'preferredcodec': 'wav',
+                                                 'preferredquality': '192'}]}
 
-        with YoutubeDL(ydl_options) as ydl:
+        with YoutubeDL(youtubedl_options) as ydl:
             ydl.extract_info(url, download=True)
 
         return final_wav_file_path
