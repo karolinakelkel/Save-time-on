@@ -1,35 +1,34 @@
 import os
 from yt_dlp import YoutubeDL
+from datetime import datetime
+import uuid
 
 
-def extract_audio_from_youtube(url, output_path):
+def generate_unique_file_name() -> str:
+    timestamp = datetime.now().strftime('%d-%m-%Y_%H-%M-%S')
+    unique_id = uuid.uuid4().hex
+    return f'{timestamp}_{unique_id}'
+
+
+def extract_audio_from_youtube_video(url: str, output_path: str) -> str:
     try:
-        # Загрузка видео с YouTube
-        print("Начинается загрузка видео...")
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'wav',
-                'preferredquality': '192',
-            }],
-        }
+        unique_file_name = generate_unique_file_name()
+        temp_file_path = os.path.join(output_path, f'{unique_file_name}.webm')
+        final_wav_file_path = os.path.join(output_path, f'{unique_file_name}.wav')
 
-        with YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(url, download=True)
-            title = info_dict.get('title', None)
-            wav_file = os.path.join(output_path, f"{title}.wav")
-            print(f"Скачанный и конвертированный аудио файл: {wav_file}")
+        ydl_options = {'format': 'bestaudio',
+                       'outtmpl': temp_file_path,
+                       'postprocessors': [{'key': 'FFmpegExtractAudio',
+                                           'preferredcodec': 'wav',
+                                           'preferredquality': '192'}]}
 
-        return wav_file
-    except Exception as e:
-        print(f"Произошла ошибка: {e}")
-        return None
+        with YoutubeDL(ydl_options) as ydl:
+            ydl.extract_info(url, download=True)
+
+        return final_wav_file_path
+    except Exception as initial_exception:
+        raise ValueError('Failed to extract information from video') from initial_exception
 
 
-wav_file_path = extract_audio_from_youtube('https://www.youtube.com/watch?v=rxMCuwbYje', '/Save-time-on')
-if wav_file_path:
-    print(f"WAV файл сохранен по пути: {wav_file_path}")
-else:
-    print("Не удалось создать WAV файл")
+output_path = '/Users/carolinakelkel/Save-time-on'
+wav_file_path = extract_audio_from_youtube_video('https://www.youtube.com/watch?v=05cVgDJRW_U', output_path)
