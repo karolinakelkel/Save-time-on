@@ -67,4 +67,3 @@ while i != 0:
     i -= 1
 
 result_text = input_text[:i - 1]
-print(result_text)
