@@ -6,7 +6,7 @@ from typing import Optional
 from yt_dlp import YoutubeDL
 
 DATE_FORMAT = '%d-%m-%Y_%H-%M-%S'
-YOUTUBE_ID_REGEX = re.compile(r'(?<=e/|d/|v/|v=)([A-Za-z\d]+)')
+YOUTUBE_ID_REGEX = re.compile(r'(?<=e/|d/|v/|v=)([A-Za-z-_\d]+)')
 AUDIO_FORMAT = 'bestaudio'
 AUDIO_CODEC = 'wav'
 AUDIO_QUALITY = '192'
@@ -26,11 +26,10 @@ def create_path(*, path: str, file_name: str) -> str:
 def extract_audio_from_youtube_video(*, url: str, output_path: str) -> str:
     try:
         unique_file_name = generate_unique_file_name()
-        temp_file_path = create_path(path=output_path, file_name=f'{unique_file_name}.webm')
         final_wav_file_path = create_path(path=output_path, file_name=f'{unique_file_name}.wav')
 
         youtubedl_options = {'format': AUDIO_FORMAT,
-                             'outtmpl': temp_file_path,
+                             'outtmpl': create_path(path=output_path, file_name=f'{unique_file_name}.%(ext)s'),
                              'postprocessors': [{'key': 'FFmpegExtractAudio',
                                                  'preferredcodec': AUDIO_CODEC,
                                                  'preferredquality': AUDIO_QUALITY}]}
