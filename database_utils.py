@@ -1,7 +1,7 @@
 import firebase_admin
 import os
 from dotenv import load_dotenv
-from firebase_admin import credentials, db, initialize_app
+from firebase_admin import credentials, db, firestore, initialize_app
 from typing import Optional
 
 load_dotenv()
@@ -11,7 +11,7 @@ FIREBASE_DB_URL = os.getenv('FIREBASE_DB_URL')
 FIREBASE_DB_NODE = 'summaries'
 
 
-def connect_to_db() -> None:
+def connect_to_db():
     try:
         if not firebase_admin._apps:
             credential = credentials.Certificate(FIREBASE_DB_CONFIG_PATH)
