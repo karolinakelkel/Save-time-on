@@ -2,8 +2,8 @@ from openai import OpenAI
 
 MODEL_VERSION = 'gpt-4'
 ROLE = 'user'
-PROMPT = ('Summarise in English and correct grammar (if needed). A summary must be really short. '
-          'Only main ideas. 10 sentences max.')
+PROMPT = ('Summarise in English and correct grammar (if needed). Do not mention the text or transcript.'
+          'A summary must be really short. Only main ideas. 10 sentences max.')
 
 
 def get_summary(input_text: str, client: OpenAI) -> str:
