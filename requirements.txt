@@ -1,8 +1,4 @@
-fastapi==0.112.0
-firebase-admin==6.5.0
-openai==1.37.0
-openai-whisper==20231117
-pydantic==2.8.2
-python-dotenv==1.0.1
-uvicorn==0.30
-yt-dlp==2024.7.25
+pip==25.1.1
+yt-dlp==2025.4.30
+dotenv==0.9.9
+python-dotenv==1.1.0

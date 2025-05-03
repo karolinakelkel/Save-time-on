@@ -19,6 +19,8 @@ class Config:
 
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
+    FFMPEG_LOCATION = os.getenv('FFMPEG_PATH')
+
     @staticmethod
     def validate_environment_variables():
         """
@@ -34,3 +36,5 @@ class Config:
             raise ValueError('Database URL (FIREBASE_DB_URL) is not set in environment variables')
         if not Config.OPENAI_API_KEY:
             raise ValueError("OpenAI API key (OPENAI_API_KEY) is not set in environment variables")
+        if not Config.FFMPEG_LOCATION:
+            raise ValueError("ffmpeg path (FFMPEG_PATH) is not set in environment variables")

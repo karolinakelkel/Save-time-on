@@ -1,15 +1,18 @@
 import os
-import re
 import uuid
 from datetime import datetime
-from typing import Optional
+from dotenv import load_dotenv
+from logger import logger
 from yt_dlp import YoutubeDL
 
+load_dotenv()
+
 DATE_FORMAT = '%d-%m-%Y_%H-%M-%S'
-YOUTUBE_ID_REGEX = re.compile(r'(?<=e/|d/|v/|v=)([A-Za-z-_\d]+)')
 AUDIO_FORMAT = 'bestaudio'
 AUDIO_CODEC = 'wav'
 AUDIO_QUALITY = '192'
+FFMPEG_POSTPROCESSOR_KEY = 'FFmpegExtractAudio'
+FFMPEG_PATH = os.getenv('FFMPEG_PATH')
 
 
 def generate_unique_file_name() -> str:
@@ -30,19 +33,18 @@ def extract_audio_from_youtube_video(*, url: str, output_path: str) -> str:
 
         youtubedl_options = {'format': AUDIO_FORMAT,
                              'outtmpl': create_path(path=output_path, file_name=f'{unique_file_name}.%(ext)s'),
-                             'postprocessors': [{'key': 'FFmpegExtractAudio',
+                             'postprocessors': [{'key': FFMPEG_POSTPROCESSOR_KEY,
                                                  'preferredcodec': AUDIO_CODEC,
-                                                 'preferredquality': AUDIO_QUALITY}]}
+                                                 'preferredquality': AUDIO_QUALITY}],
+                             'ffmpeg_location': FFMPEG_PATH}
 
         with YoutubeDL(youtubedl_options) as ydl:
             ydl.extract_info(url, download=True)
 
+        logger.info(f"Audio successfully extracted and saved to: {final_wav_file_path}")
+
         return final_wav_file_path
-    except Exception as initial_exception:
-        raise ValueError('Failed to extract information from video') from initial_exception
+    except Exception as e:
+        logger.error(f"Failed to extract audio: {e}")
 
-
-def extract_youtube_id(url: str) -> Optional[str]:
-    match = YOUTUBE_ID_REGEX.search(url)
-
-    return match.group() if match else None
+        raise ValueError(f'Failed to extract information from video: {e}')
