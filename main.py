@@ -3,23 +3,35 @@ from config import Config
 from openai import OpenAI
 from audio_utils import extract_audio_from_youtube_video
 from convert_audio_to_text import recognise_speech
-from text_summariser import get_summary
+from text_summariser import summarise
 from logger import logger
 
-OUTPUT_PATH = '/tmp'
+TEMP_DIR = '/tmp'
 
-def main():
+
+def get_video_url_from_user() -> str:
+    """
+    Prompts the user to enter a YouTube video URL.
+
+    Returns:
+        str: The entered URL.
+    """
+
+    return input('Enter YouTube video URL: ')
+
+
+def main() -> None:
     try:
         config = Config()
         client = OpenAI(api_key=config.openai_api_key)
 
-        video_url = input('Enter YouTube video URL: ')
+        video_url = get_video_url_from_user()
 
-        os.makedirs(OUTPUT_PATH, exist_ok=True)
+        os.makedirs(TEMP_DIR, exist_ok=True)
 
         logger.info('Starting YouTube summarisation process.')
         audio_path = extract_audio_from_youtube_video(url=video_url,
-                                                      output_path=OUTPUT_PATH,
+                                                      output_path=TEMP_DIR,
                                                       ffmpeg_path=config.ffmpeg_path)
         logger.info('Audio extracted successfully.')
 
@@ -28,8 +40,8 @@ def main():
 
         os.remove(audio_path)
 
-        summary = get_summary(raw_text, client)
-        logger.info(f'Summary generated: {summary}')
+        summary = summarise(raw_text, client)
+        logger.info(f'Summary generated')
 
         print(f'\n{summary}\n')
     except Exception as e:

@@ -1,12 +1,14 @@
 from openai import OpenAI
+from logger import logger
 
 MODEL_VERSION = 'gpt-4'
 ROLE = 'user'
 PROMPT = ('Summarise in English and correct grammar (if needed). Do not mention the text or transcript.'
           'A summary must be really short. Only main ideas. 10 sentences max.')
+TEMPERATURE = 0.7
 
 
-def get_summary(input_text: str, client: OpenAI) -> str:
+def summarise(input_text: str, client: OpenAI) -> str:
     """
     Generates a short summary from input text using the OpenAI GPT model.
 
@@ -18,11 +20,17 @@ def get_summary(input_text: str, client: OpenAI) -> str:
         str: The generated summary.
     """
 
-    response = client.chat.completions.create(model=MODEL_VERSION,
-                                              messages=[{'role': ROLE,
-                                                         'content': f'{PROMPT}\n\n'
-                                                                    f'Text:\n{input_text}\n\n'
-                                                                    f'Summary:'}],
-                                              temperature=0.7)
+    message_params = {'role': ROLE,
+                      'content': f'{PROMPT}\n\nText:\n{input_text}\n\nSummary:'}
 
-    return response.choices[0].message.content.strip()
+    try:
+        response = client.chat.completions.create(model=MODEL_VERSION,
+                                                  messages=[message_params],
+                                                  temperature=TEMPERATURE)
+
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        logger.error(f'Failed to generate summary: {e}')
+
+        raise RuntimeError(f'Failed to generate summary: {e}')

@@ -10,6 +10,7 @@ AUDIO_CODEC = 'wav'
 AUDIO_QUALITY = '192'
 FFMPEG_POSTPROCESSOR_KEY = 'FFmpegExtractAudio'
 
+
 def generate_unique_file_name() -> str:
     """
     Generates a unique filename based on the current datetime and a random UUID.
@@ -68,7 +69,6 @@ def extract_audio_from_youtube_video(*, url: str, output_path: str, ffmpeg_path:
 
         with YoutubeDL(youtubedl_options) as ydl:
             ydl.extract_info(url, download=True)
-
         logger.info(f'Audio successfully extracted and saved to: {final_wav_file_path}')
 
         return final_wav_file_path
