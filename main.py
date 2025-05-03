@@ -1,6 +1,6 @@
 import os
-from config import Config
 from openai import OpenAI
+from config import Config
 from audio_utils import extract_audio_from_youtube_video
 from convert_audio_to_text import recognise_speech
 from text_summariser import summarise

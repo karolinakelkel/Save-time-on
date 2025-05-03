@@ -1,8 +1,8 @@
 import os
 import uuid
 from datetime import datetime
-from logger import logger
 from yt_dlp import YoutubeDL
+from logger import logger
 
 DATE_FORMAT = '%d-%m-%Y_%H-%M-%S'
 AUDIO_FORMAT = 'bestaudio'
