@@ -6,7 +6,7 @@ from audio_utils import extract_audio_from_youtube_video
 from config import Config
 from convert_audio_to_text import recognize_speech
 from database_utils import add_summary_to_database, get_summary_from_database
-from text_summarizer import get_summary
+from text_summariser import get_summary
 
 app = FastAPI()
 
