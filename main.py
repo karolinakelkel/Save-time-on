@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from audio_utils import extract_audio_from_youtube_video, extract_youtube_id
+from audio_utils import extract_audio_from_youtube_video
 from config import Config
 from convert_audio_to_text import recognize_speech
 from database_utils import add_summary_to_database, get_summary_from_database
@@ -48,6 +48,3 @@ async def test_summarize_video(video_url: str) -> None:
     request = UserRequest(youtube_url=video_url)
     summary = await summarize_video(request)
     print(summary)
-
-# import asyncio
-# asyncio.run(test_summarize_video(video_url=''))
