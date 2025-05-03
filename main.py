@@ -1,50 +1,40 @@
 import os
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-
-from audio_utils import extract_audio_from_youtube_video
 from config import Config
-from convert_audio_to_text import recognize_speech
-from database_utils import add_summary_to_database, get_summary_from_database
+from openai import OpenAI
+from audio_utils import extract_audio_from_youtube_video
+from convert_audio_to_text import recognise_speech
 from text_summariser import get_summary
+from logger import logger
 
-app = FastAPI()
+OUTPUT_PATH = '/tmp'
 
-OUTPUT_PATH = '/tmp/'
-
-try:
-    Config.validate_environment_variables()
-except ValueError as e:
-    raise HTTPException(status_code=500, detail=f'Configuration error: {e}')
-
-
-class UserRequest(BaseModel):
-    youtube_url: str
-
-
-@app.post('/summarise/')
-async def summarize_video(request: UserRequest):
+def main():
     try:
-        video_url = request.youtube_url
-        youtube_id = extract_youtube_id(video_url)
-        summary = get_summary_from_database(youtube_id)
+        config = Config()
+        client = OpenAI(api_key=config.openai_api_key)
 
-        if summary is None:
-            if not os.path.exists(OUTPUT_PATH):
-                os.makedirs(OUTPUT_PATH)
+        video_url = input('Enter YouTube video URL: ')
 
-            audio_path = extract_audio_from_youtube_video(url=video_url, output_path=OUTPUT_PATH)
-            raw_text = recognize_speech(audio_path)
-            os.remove(audio_path)
-            summary = get_summary(raw_text)
-            add_summary_to_database(youtube_id=youtube_id, summary=summary)
+        os.makedirs(OUTPUT_PATH, exist_ok=True)
 
-        return {'summary': summary}
+        logger.info('Starting YouTube summarisation process.')
+        audio_path = extract_audio_from_youtube_video(url=video_url,
+                                                      output_path=OUTPUT_PATH,
+                                                      ffmpeg_path=config.ffmpeg_path)
+        logger.info('Audio extracted successfully.')
+
+        raw_text = recognise_speech(audio_path)
+        logger.info('Transcription completed.')
+
+        os.remove(audio_path)
+
+        summary = get_summary(raw_text, client)
+        logger.info(f'Summary generated: {summary}')
+
+        print(f'\n{summary}\n')
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f'An error occurred during summarization: {str(e)}')
+        logger.error(f'Error occurred: {e}')
+        print(f'\nError occurred: {e}')
 
-
-async def test_summarize_video(video_url: str) -> None:
-    request = UserRequest(youtube_url=video_url)
-    summary = await summarize_video(request)
-    print(summary)
+if __name__ == '__main__':
+    main()
