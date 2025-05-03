@@ -69,10 +69,10 @@ def extract_audio_from_youtube_video(*, url: str, output_path: str, ffmpeg_path:
         with YoutubeDL(youtubedl_options) as ydl:
             ydl.extract_info(url, download=True)
 
-        logger.info(f"Audio successfully extracted and saved to: {final_wav_file_path}")
+        logger.info(f'Audio successfully extracted and saved to: {final_wav_file_path}')
 
         return final_wav_file_path
     except Exception as e:
-        logger.error(f"Failed to extract audio from {url} to {final_wav_file_path}: {e}")
+        logger.error(f'Failed to extract audio from {url} to {final_wav_file_path}: {e}')
 
         raise ValueError(f'Failed to extract information from video: {e}')

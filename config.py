@@ -33,4 +33,4 @@ class Config:
             missing_vars.append('FFMPEG_PATH')
 
         if missing_vars:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+            raise ValueError(f'Missing required environment variables: {', '.join(missing_vars)}')
